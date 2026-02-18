@@ -1,0 +1,34 @@
+When a user logs in to an application, they enter their credentials such as username/email and password. The server verifies these credentials by checking the database. If the password matches (usually after comparing with a hashed password using bcrypt), the user is authenticated. After successful authentication, the server generates a token. In modern web applications, this token is often a JWT (JSON Web Token). The token acts as a digital proof that the user has already been verified. Instead of sending username and password with every request, the client sends this token to access protected resources.
+
+The token is then stored on the client side. It can be stored in cookies, localStorage, sessionStorage, or secure app storage in mobile applications. Cookies are small pieces of data stored in the browser and are automatically sent with every request to the server if configured properly. HTTP-only cookies are commonly used for security because they cannot be accessed through JavaScript, which helps protect against XSS attacks. Alternatively, the token can be stored in localStorage and manually sent in the Authorization header as a Bearer token (e.g., Authorization: Bearer <token>). The word “Bearer” simply means the client is carrying the token as proof of authentication.
+
+Every time the user makes a request after login, the server verifies the token instead of checking the password again. JWT verification is very fast because it only checks the token’s signature and expiration time using a secret key. If the token is valid and not expired, the server allows access. This process is called authentication using tokens. After authentication, the server may also perform authorization, which checks what actions the user is allowed to perform (for example, whether the user is an admin or a normal user).
+
+If the token expires, the server returns a 401 Unauthorized response, and the user must log in again or use a refresh token (in advanced systems). Refresh tokens are long-lived tokens used to generate new access tokens without requiring the user to log in again.
+
+For example, when you log in to Instagram using your username and password, Instagram verifies your credentials and generates a token. This token is stored in your browser or app. When you reopen Instagram later, the app sends the stored token to Instagram’s servers. The server verifies the token quickly and grants access to your account without asking for your password again. If you choose “Save login info,” Instagram simply keeps the token stored for a longer time. Even if you don’t choose that option, a token is still created during login—it may just not be stored permanently. That is why Instagram loads your feed instantly when you open it: it verifies your token, not your password.
+
+In summary, authentication verifies who you are, tokens store proof of that verification, cookies or storage mechanisms keep the token on the client side, and authorization determines what actions you are allowed to perform after authentication.
+
+// ========== QUESTION ========
+
+Q .1.} What happens if someone steals your token ?
+     => If someone steals your token, they can impersonate you because a token acts as proof that you are already authenticated. When a server receives a valid token, it assumes the request is coming from the legitimate user. So if an attacker obtains your token, they can send it with their own requests and gain access to your account without knowing your password. This is why tokens must be protected using HTTPS, short expiration times, and secure storage methods like HTTP-only cookies.
+
+
+Q .2.} Difference between session and JWT ?
+     => The main difference between sessions and JWT lies in where user authentication data is stored. In a session-based system, the server stores user login information in memory or a database and sends only a session ID to the client. Every time the client makes a request, the server looks up that session ID to verify the user. This makes the system stateful because the server must remember each logged-in user. In contrast, JWT (JSON Web Token) is stateless. The server does not store login data. Instead, it creates a signed token containing user information and sends it to the client. On each request, the server verifies the token’s signature without needing to check a database for session data, making it more scalable.
+
+Q .3.} What is refresh token ?
+     => A refresh token is used to keep users logged in without forcing them to enter credentials repeatedly. Access tokens (normal JWTs) usually have a short expiration time for security reasons. When an access token expires, instead of asking the user to log in again, the system uses a refresh token—which has a longer lifespan—to generate a new access token. This provides both security (short-lived access tokens) and convenience (fewer logins).
+
+Q .4.} Where token is stored exactly?
+     => Tokens are stored on the client side after login. In web applications, they are commonly stored in HTTP-only cookies, localStorage, or sessionStorage. HTTP-only cookies are considered more secure because they cannot be accessed by JavaScript and are automatically sent with each request. In mobile apps, tokens are stored in secure app storage. Each time the user makes a request, the stored token is sent to the server, usually in the Authorization header as a Bearer token, allowing the server to verify the user’s identity quickly without checking the password again.
+
+
+// === PAYLOAD ===
+Payload is the part of a JWT that contains user information and token details.
+
+// =====
+=> When client sends future requests : It sends token in header
+=> The client sends the token inside the HTTP header. Specifically in : Authorization header

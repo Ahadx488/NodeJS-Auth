@@ -1,0 +1,16 @@
+In a role-based image upload system, the overall flow begins when a client sends a request to upload an image. This request usually contains a file and is sent using the multipart/form-data content type. When the request reaches the Express server, it first passes through authentication middleware. This middleware verifies the JWT token sent in the request header and decodes it to identify the user. The decoded user information is attached to the request object so that subsequent middleware can access it. After authentication, a role-based authorization middleware runs. This middleware checks whether the authenticated user has the role of “admin.” If the user is not an admin, the request is rejected with a 403 Forbidden response. If the user is an admin, the request proceeds to the file-handling middleware (Multer), which extracts the uploaded file from the request. The file is then sent to Cloudinary, a cloud-based storage service, which uploads the image and returns a secure URL. That URL is typically saved in the database along with metadata such as who uploaded it. Finally, the server sends a success response to the client. In contrast, when a normal user wants to view images, they only need to pass authentication. They can access a route that fetches stored image URLs from the database and displays them, but they cannot upload because they lack the required role.
+
+
+# MULTER ===
+
+Multer is a middleware used in Node.js and Express applications for handling multipart/form-data, which is primarily used for file uploads. Express by itself cannot process file uploads directly, so Multer is used to parse incoming file data and attach it to the request object as req.file (for single file uploads) or req.files (for multiple files). Multer can be configured to store files temporarily on the local server or in memory. It also allows developers to restrict file size and file types, making it useful for validating uploads before sending them to a storage service like Cloudinary.
+
+
+#CLOUDINARY ===
+
+Cloudinary is a cloud-based media management service used to store, manage, optimize, and deliver images and videos. Instead of saving images on your own server—which can increase storage load and reduce scalability—you upload them to Cloudinary. Cloudinary stores the file securely and returns a URL that can be used to access the image. It also provides features like automatic image optimization, resizing, format conversion, and CDN delivery for faster loading worldwide. In modern applications, Cloudinary helps keep the backend lightweight because the server only stores image URLs in the database while the actual image files are managed in the cloud.
+
+
+#summary
+
+In summary, Multer handles file extraction from incoming requests, Cloudinary handles secure cloud storage and delivery of media, authentication verifies user identity using tokens, and role-based authorization ensures that only admins can upload while regular users can only view the images.
